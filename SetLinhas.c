@@ -4,8 +4,8 @@ void gera_lista()
 {
 	struct _LINE_LIST_ *aux;
 	aux = (struct _LINE_LIST_*)malloc(sizeof(struct _LINE_LIST_)); 
-	alpha = aux;
-	omega = alpha;
+	inicio = aux;
+	fim = inicio;
 	
 }
 
@@ -22,8 +22,8 @@ void escreve(char *texto)
 		aux->linha[i] = texto[i];
 	}
 
-	omega->prox = aux;
-	omega = omega->prox;
+	fim->prox = aux;
+	fim = fim->prox;
 	aux->prox = NULL;
 }
 

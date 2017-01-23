@@ -12,8 +12,8 @@ struct _LINE_LIST_
 	char *linha;
 	struct _LINE_LIST_ *prox;		
 };
-struct _LINE_LIST_ *alpha;
-struct _LINE_LIST_ *omega;
+struct _LINE_LIST_ *inicio;
+struct _LINE_LIST_ *fim;
 
 void gera_lista();
 

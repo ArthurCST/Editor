@@ -41,6 +41,9 @@ int main()
 		//Status do programa 
 		bool rodando = true;
 
+		//provisorio
+		char *nomeDoArquivo;
+
 		while (rodando)
 		{	
 			// Obtem digitado sem imprimir na tela
@@ -86,24 +89,24 @@ int main()
 //			</END>
 
 //			<F1> ABRIR
-				case KEY_F1:
+				case 112:
 					F1_ABRIR();
 				break;
 //			</F1>
 //			<F2> SALVAR
-				case KEY_F2:
+				case 113:
 					F2_SALVAR();
 				break;
 //			</F2>
 //			<F3> COMPILAR
-				case KEY_F3:
-					F3_COMPILAR(char *nomeDoArquivo);
+				case 114:
+					F3_COMPILAR(nomeDoArquivo);
 				break;
 //			</F3>
 
 //			<F3> EXECUTA
-				case KEY_F4:
-					F4_EXECUTA(char *nomeDoArquivo);
+				case 115:
+					F4_EXECUTAR(nomeDoArquivo);
 				break;
 //			</F3>
 

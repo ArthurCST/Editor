@@ -24,6 +24,6 @@
 	
 
 	void F1_ABRIR();
-	void F2_SALVAR(char *texto);
+	void F2_SALVAR();
 	void F3_COMPILAR(char *nomeDoArquivo);
-	void F4_EXECUTA(char *nomeDoArquivo);
+	void F4_EXECUTAR(char *nomeDoArquivo);

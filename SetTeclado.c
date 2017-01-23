@@ -58,7 +58,7 @@ void ENTER(char *texto, int nlin, int i)
 	newline();
 }
 
-void END_FECHAR(bool rodando)
+void END_FECHAR()
 {
 	system("exit terminal");
 }
@@ -84,7 +84,7 @@ void F3_COMPILAR(char *nomeDoArquivo)
 	system(comando);
 }
 
-void F4_EXECUTA(char *nomeDoArquivo)
+void F4_EXECUTAR(char *nomeDoArquivo)
 {
 	char *comando = "./";
 	strcat(comando, nomeDoArquivo);
