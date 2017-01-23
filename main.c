@@ -3,100 +3,115 @@
 #include <curses.h>
 #include <stdbool.h>
 #include <ctype.h>
+
 #include "conioreal.h"
 #include "SetLinhas.h"
+#include "SetTeclado.h"
 
 
 int main()
 {
+	// Inicia janela
 	initconio();
+
+	//Habilita Teclado
 	keypad(stdscr, true);
-		gera_lista();		
+
+		//Gera uma lista encadeada para a gravacao das linhas
+		gera_lista(); 										
 		
-		char *linha, c;
-		linha = (char*) malloc(TAM_LINHA * sizeof(char));
-		int unsigned caractere,i=0, nlin=1;
-		while (true)
+		//String da que recebe os valores digitados difererentes de comandos especiais
+		char *linha; 
+		
+		//Variavel auxiliar para casting dos valores inteiros para caractere										
+		char c;
+
+		//Aloca string para salvar na lista 											
+		linha = (char*) malloc(TAM_LINHA * sizeof(char)); 
+		
+		//Valor decimal da tecla digitada	
+		int unsigned caractere; 	
+
+		//Indice da posicao de gravacao de caractere na string linha						
+		int unsigned i=0; 
+		
+		//Total de linhas escritas 									 
+		int unsigned nlin=1;
+
+		//Status do programa 
+		bool rodando = true;
+
+		while (rodando)
 		{	
+			// Obtem digitado sem imprimir na tela
 			caractere = getch();
+
 			switch(caractere)
 			{
 //			<SETAS>
-				case KEY_DOWN:
-					if((wherey()+1) < nlin){
-						gotoxy(wherex(), wherey()+1);
-					}
+				//DESCE
+				case KEY_DOWN: 
+					moveDOWN(nlin);
 				break;
-				case KEY_UP:
-					if((wherey()-1) > 0){
-						gotoxy(wherex(), wherey()-1);
-					}
+				// SOBE
+				case KEY_UP: 
+					moveUP();
 				break;
-				case KEY_LEFT:
-					if(((wherex()-1) > 0) ){
-						gotoxy(wherex()-1, wherey());
-					}else if((wherey()-1) > 0){
-						gotoxy(wherex(), wherey()-1);
-					}
-				break;
-				case KEY_RIGHT:
-					if((wherex()+1) < strlen(linha)){
-						gotoxy(wherex()+1, wherey());
-					}else{
-						newline();
-					}
+				// ESQUERDA
+				case KEY_LEFT: 
+					moveLEFT();
+				break; 
+				// DIREITA
+				case KEY_RIGHT: 
+					moveRIGHT(linha);
 				break;			
 //			</SETAS>
-//  		<BACKSPACE>			
+
+//  		<BACKSPACE>	APAGAR UM CARACTERE		
 				case KEY_BACKSPACE:
-					remove_char(linha, wherex());
-					if(((wherex()-1) > 0) ){
-						gotoxy(wherex()-1, wherey());
-					}else if((wherey()-1) > 0){
-						gotoxy(wherex(), wherey()-1);
-					}
+					backspace(linha);
 				break;
 //			</BACKSPACE>
 
-//			<TAB>
-			case '\t':
-				
-			break;
-//			</TAB>
-
-//			<ENTER>
+//			<ENTER>	DESCER UMA LINHA
 				case '\n':
-					escreve(linha);
-					strcpy(linha, "" );
-					i=0;
-					nlin=nlin+1;
-					newline();
+					ENTER(linha, nlin, i);
 				break;
 //			</ENTER>
 
-//			<END>
+//			<END> FECHAR
 				case KEY_END:
-					exit(0);
+					END_FECHAR();
 				break;
 //			</END>
 
-/*			<F1>//ABRIR
+//			<F1> ABRIR
 				case KEY_F1:
-					
+					F1_ABRIR();
 				break;
 //			</F1>
-
-//			<F2>//SALVA
+//			<F2> SALVAR
 				case KEY_F2:
-					
+					F2_SALVAR();
 				break;
 //			</F2>
-
-//			<F3>//COMPILA
+//			<F3> COMPILAR
 				case KEY_F3:
-					
+					F3_COMPILAR(char *nomeDoArquivo);
 				break;
-//			</F3>*/				
+//			</F3>
+
+//			<F3> EXECUTA
+				case KEY_F4:
+					F4_EXECUTA(char *nomeDoArquivo);
+				break;
+//			</F3>
+
+//			<TAB>
+				case '\t':
+				
+				break;
+//			</TAB>
 
 				default:
 					c = (char) caractere;
@@ -108,135 +123,6 @@ int main()
 	
 		}
 
-
-
-
 	endconio();
 	return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-
-
-
-
-int main()
-{
-	
-	initscr(); // Inicia tela
-	keypad(stdscr, true); // Habilita teclado
-	erase(); // Preenche a tela de espaços em branco
-	refresh();
-
-	gera_lista();
-
-	char *linha, c;
-	linha = (char*) malloc(TAM_LINHA * sizeof(char));
-	int unsigned caractere,i=0, x, y;
-	//char palavra_reservada[10]; 
-	while (true)
-	{	
-		getyx(stdscr, y, x);
-		caractere = getch();
-		switch(caractere)
-		{
-//			<SETAS>
-			case KEY_DOWN:
-
-			break;
-			case KEY_UP:
-			
-			break;
-			case KEY_LEFT:
-			
-			break;
-			case KEY_RIGHT:
-			
-			break;			
-//			</SETAS>
-
-			<BACKSPACE>			
-			case KEY_DC:
-				
-			break;
-//			</BACKSPACE>
-
-//			<ENTER>
-			case '\n':
-				linha[i] = '\0';
-				i=0;
-				puts(linha);
-
-				escreve(linha);
-				move(0, x+1);
-				getyx(stdscr, y, x);
-				free(linha);
-				linha = (char*) malloc(TAM_LINHA * sizeof(char));
-			break;
-//			</ENTER>
-
-//			<TAB>
-			case '\t':
-				strcat(linha, "    ");
-			break;
-//			</TAB>
-
-//			<ESC>
-			case 27:
-				exit(0);
-			break;
-//			</ESC>
-
-			default:
-				if(isprint(caractere))
-				{	
-					c = (char)caractere;
-					linha[i] = c;
-					i++;
-				}else{
-					printw("\a");
-				}
-		}
-	
-	}
-	erase();
-	refresh();
-	endwin();
-return 0;
-
-}*/
