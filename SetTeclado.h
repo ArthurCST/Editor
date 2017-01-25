@@ -1,29 +1,17 @@
 #include <stdlib.h>
+
 #include <ncurses.h>
 #include <curses.h>
 #include <stdbool.h>
 #include <ctype.h>
+#include <string.h>
 
-#include "conioreal.h"
-#include "SetLinhas.h"
 
 //	<SETA>
-	void moveUP();
-	void moveDOWN(int nlin);
-	void moveLEFT();
-	void moveRIGHT(char *texto);
+	void moveUP(); //sobe
+	void moveDOWN(int nlin); //desce
+	void moveLEFT(); //mover para a esquerda
+	void moveRIGHT(int *linha); //mover para a direita
 //	</SETA>
 
-	void backspace(char *texto);
-
-
-	void ENTER(char *texto, int nlin, int i);
-	
-	
-	void END_FECHAR();
-	
-
-	void F1_ABRIR();
-	void F2_SALVAR();
-	void F3_COMPILAR(char *nomeDoArquivo);
-	void F4_EXECUTAR(char *nomeDoArquivo);
+	void END_FECHAR(); //tecla END para finalizar o programa 

@@ -3,7 +3,7 @@
 #include <curses.h>
 #include <stdbool.h>
 #include <ctype.h>
-
+#include <stdio.h>
 #include "conioreal.h"
 #include "SetLinhas.h"
 #include "SetTeclado.h"
@@ -13,42 +13,39 @@ int main()
 {
 	// Inicia janela
 	initconio();
-
+	FILE *arq;
 	//Habilita Teclado
 	keypad(stdscr, true);
 
 		//Gera uma lista encadeada para a gravacao das linhas
-		gera_lista(); 										
+		LISTA *lista = gerar_lista();								
 		
 		//String da que recebe os valores digitados difererentes de comandos especiais
-		char *linha; 
+		int *linha; 
 		
 		//Variavel auxiliar para casting dos valores inteiros para caractere										
-		char c;
+		char c, *nomeDoArquivo, che;
+
+		int lin, tamanho_da_linha = 0;
 
 		//Aloca string para salvar na lista 											
-		linha = (char*) malloc(TAM_LINHA * sizeof(char)); 
+		linha = (int*) malloc(1000 * sizeof(int));
+		for (lin = 0; lin < 1000; ++lin)
+		{
+			linha[lin] = 0;
+		}
 		
 		//Valor decimal da tecla digitada	
 		int unsigned caractere; 	
-
-		//Indice da posicao de gravacao de caractere na string linha						
-		int unsigned i=0; 
+					
 		
 		//Total de linhas escritas 									 
 		int unsigned nlin=1;
 
-		//Status do programa 
-		bool rodando = true;
-
-		//provisorio
-		char *nomeDoArquivo;
-
-		while (rodando)
+		while (true)
 		{	
-			// Obtem digitado sem imprimir na tela
+			DATA dado;
 			caractere = getch();
-
 			switch(caractere)
 			{
 //			<SETAS>
@@ -72,60 +69,103 @@ int main()
 
 //  		<BACKSPACE>	APAGAR UM CARACTERE		
 				case KEY_BACKSPACE:
-					backspace(linha);
+					moveLEFT();
+					remover_letra(lista, linha);
 				break;
 //			</BACKSPACE>
 
 //			<ENTER>	DESCER UMA LINHA
 				case '\n':
-					ENTER(linha, nlin, i);
+					escreve(lista, dado, linha, nlin,'\n');
+					linha[wherey()] = tamanho_da_linha;
+					newline();
+					nlin++;
+					tamanho_da_linha = 0;
 				break;
 //			</ENTER>
 
-//			<END> FECHAR
+//			<END>
 				case KEY_END:
 					END_FECHAR();
 				break;
 //			</END>
 
 //			<F1> ABRIR
-				case 112:
-					F1_ABRIR();
+				case KEY_F(1):
+					
+					printw("Digite o nome do arquivo: ");
+					scanw("%s", nomeDoArquivo);//lê nome do arquivo
+					arq = fopen(nomeDoArquivo, "r");
+					if(arq == NULL)
+	    				printw("Erro, nao foi possivel abrir o arquivo\n");
+					else{
+						while( (che=fgetc(arq))!= EOF ){
+							
+							dado.letra = che;
+							NODE *noh = (NODE*) malloc(sizeof(NODE));
+							noh->dado = dado;
+							noh->prox = NULL;
+							NODE *ultimo = lista->head;
+							while(ultimo->prox != NULL)
+							{
+								ultimo = ultimo->prox;
+							}
+							ultimo->prox = noh;
+							lista->tam++;
+						}
+					}
+					imprimir_lista(lista);
 				break;
 //			</F1>
+
 //			<F2> SALVAR
-				case 113:
-					F2_SALVAR();
+				case KEY_F(2):
+				
+				arq = fopen("test.c", "w+");
+				char ch;
+				NODE *ponteiro = lista->head;
+
+				while(ponteiro != NULL)
+				{	
+					ch = ponteiro->dado.letra;
+					fprintf(arq, "%c", ch);
+					ponteiro = ponteiro->prox;
+				}
+				fclose(arq);
+					
 				break;
 //			</F2>
-//			<F3> COMPILAR
-				case 114:
-					F3_COMPILAR(nomeDoArquivo);
-				break;
-//			</F3>
 
-//			<F3> EXECUTA
-				case 115:
-					F4_EXECUTAR(nomeDoArquivo);
-				break;
-//			</F3>
+//			<F3> COMPILAR E EXECUTAR
+				case KEY_F(3):
+					clear();
+					printw("Digite o nome do arquivo. - sem a extensao -");
 
-//			<TAB>
-				case '\t':
-				
+					scanw("%s", nomeDoArquivo);
+					char *comando = "gcc ";
+					char *str2 = ".c -o ";
+					char *str3 = " && ./";
+					strcat(comando, nomeDoArquivo);
+					strcat(comando, str2);
+					strcat(comando, nomeDoArquivo);
+					strcat(comando, str3);
+					strcat(comando, nomeDoArquivo);
+					system(comando);
+
 				break;
-//			</TAB>
+//			</F3>		
 
 				default:
+					linha[wherey()] = tamanho_da_linha;
 					c = (char) caractere;
-					printw("%c", c);
-					linha[i] = c;
-					i++;
-					
+					escreve(lista, dado, linha, nlin, c);
+					tamanho_da_linha++;	
+					printw("%c",c);
+								
 			}
+			
 	
 		}
-
 	endconio();
 	return 0;
 }
